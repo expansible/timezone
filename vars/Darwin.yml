@@ -1,0 +1,10 @@
+%YAML 1.1  # expansible.timezone/vars/Darwin.yml  -*- mode: yaml -*-
+
+# Darwin (MacOS X) timezone variables
+---
+
+# command to get current timezone
+timezone_check: systemsetup -gettimezone
+
+# command to set current timezone
+timezone_set: systemsetup -settimezone

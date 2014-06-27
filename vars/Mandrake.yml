@@ -1,0 +1,7 @@
+%YAML 1.1  # expansible.timezone/vars/Mandrake.yml  -*- mode: yaml -*-
+
+# Mandrake timezone variables
+---
+
+# configuration file with timezone variable
+timezone_conf_path: '/etc/sysconfig/clock'

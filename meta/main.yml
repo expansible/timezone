@@ -1,15 +1,57 @@
 ---
 galaxy_info:
-  author: Sergey Korolev
-  description: Set timezone on Debian-like systems.
-  license: MIT
+  author: Sergey Korolev, Alexander Dupuy
+  description: Set system timezone on almost any OS supported by Ansible.
+  company: expansible
+  license: MIT (Expat)
+  min_ansible_version: 1.4
+  #
+  # Below are all platforms currently available. Just uncomment
+  # the ones that apply to your role. If you don't see your
+  # platform on this list, let us know and we'll get it added!
+  #
   platforms:
+  - name: EL
+    versions:
+    - all
+  - name: GenericUNIX
+    versions:
+    - all
+  - name: Fedora
+    versions:
+    - all
+  - name: opensuse
+    versions:
+    - all
+  - name: Amazon
+    versions:
+    - all
+  - name: GenericBSD
+    versions:
+    - all
+  - name: FreeBSD
+    versions:
+    - all
   - name: Ubuntu
+    versions:
+    - all
+  - name: SLES
+    versions:
+    - all
+  - name: GenericLinux
     versions:
     - all
   - name: Debian
     versions:
     - all
+  #
+  # Below are all categories currently available. Just as with
+  # the platforms above, uncomment those that apply to your role.
+  #
   categories:
   - system
 dependencies: []
+  # List your role dependencies here, one per line. Only
+  # dependencies available via galaxy should be listed here.
+  # Be sure to remove the '[]' above if you add dependencies
+  # to this list.

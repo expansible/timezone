@@ -1,3 +1,37 @@
+%YAML 1.1  # expansible.timezone/defaults/main.yml  -*- mode: yaml -*-
+
+# Default values for timezone variables
 ---
-# defaults file for timezone
-timezone: UTC
+
+# desired system timezone setting (e.g. Americas/New_York, Europe/Berline, etc.)
+timezone: GMT
+# default is GMT rather than UTC since some OS (e.g. MacOS) lack UTC alias
+
+# command to get current timezone
+timezone_check: timedatectl
+# default to systemd command
+
+# command to set current timezone
+timezone_set: timedatectl set-timezone
+# default to systemd command
+
+# location of localtime zonefile (if empty, will not be created if absent)
+tzfile: '/etc/localtime'
+# default to '/etc/localtime' - will be created by 'copy' mode if absent
+
+# command to update {{ tzfile }} (/etc/localtime) from /etc/timezone file
+#timezone_file_set: dpkg-reconfigure (Debian) or emerge (Gentoo)
+# not set by default
+
+# install mode for {{ tzfile }}: 'copy', 'symlink', or 'auto' (quoted string)
+timezone_localtime_mode: 'auto'
+# 'copy' or 'symlink' here will force that type
+
+# configuration file with timezone variable
+#timezone_conf_path: '/etc/sysconfig/clock' (RH/Mdk), '/etc/default/init' (Sol)
+timezone_conf_path: ''
+# not set by default
+
+# variable name for timezone in configuration file (timezone_conf_path)
+#timezone_conf_var: 'ZONE' (RedHat) or 'TIMEZONE' (Suse) or 'TZ' (Solaris)
+timezone_conf_var: 'ZONE'

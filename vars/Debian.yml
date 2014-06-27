@@ -1,0 +1,7 @@
+%YAML 1.1  # expansible.timezone/vars/Debian.yml  -*- mode: yaml -*-
+
+# Debian (Ubuntu) timezone variables
+---
+
+# command to update /etc/localtime from /etc/timezone file
+timezone_file_set: dpkg-reconfigure --frontend noninteractive tzdata

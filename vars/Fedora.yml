@@ -1,0 +1,8 @@
+%YAML 1.1  # expansible.timezone/vars/Fedora.yml  -*- mode: yaml -*-
+
+# Fedora timezone variables
+---
+
+# configuration file with timezone variable
+timezone_conf_path: {{ '/etc/sysconfig/clock'
+                       if ansible_lsb.major_release < 18 }}

@@ -1,0 +1,10 @@
+%YAML 1.1  # expansible.timezone/vars/Suse.yml  -*- mode: yaml -*-
+
+# SuSE timezone variables
+---
+
+# configuration file with timezone variable
+timezone_conf_path: '/etc/sysconfig/clock'
+
+# variable name for timezone in configuration file (timezone_conf_path)
+timezone_conf_var: 'TIMEZONE'

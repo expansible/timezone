@@ -1,0 +1,21 @@
+%YAML 1.1  # expansible.timezone/vars/Solaris.yml  -*- mode: yaml -*-
+
+# Solaris timezone variables
+---
+
+# command to get current timezone
+timezone_check: {{ 'svccfg -s timezone:default listprop timezone/localtime'
+                   if ansible_distribution_version >= 11 }}
+
+# command to set current timezone
+timezone_set: svccfg -s timezone:default setprop timezone/localtime = astring
+
+# configuration file with timezone variable
+timezone_conf_path: {{ '/etc/TIMEZONE'
+                       if ansible_distribution_version < 11 }}
+
+# variable name for timezone in configuration file (timezone_conf_path)
+timezone_conf_var: 'TZ'
+
+# location of localtime zonefile (no /etc/localtime)
+tzfile: ''

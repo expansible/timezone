@@ -1,0 +1,13 @@
+%YAML 1.1  # expansible.timezone/vars/HP-UX.yml  -*- mode: yaml -*-
+
+# HP-UX timezone variables
+---
+
+# configuration file with timezone variable
+timezone_conf_path: '/etc/TIMEZONE'
+
+# variable name for timezone in configuration file (timezone_conf_path)
+timezone_conf_var: 'TZ'
+
+# location of localtime zonefile (no /etc/localtime)
+tzfile:''

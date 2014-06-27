@@ -1,17 +1,99 @@
+%YAML 1.1  # expansible.timezone/tasks/main.yml  -*- mode: yaml -*-
+
+# Set the system timezone
+
+# Linux with systemd: timedatectl [set-timezone]
+# Darwin (MacOS X): systemsetup -{get,set}timezone (/etc/localtime symlink)
+# Debian (Ubuntu): /etc/timezone + dpkg-reconfigure (/etc/localtime copy)
+# RedHat (Fedora, CentOS): /etc/localtime symlink, /etc/sysconfig/clock ZONE=
+# Suse (SLES): /etc/localtime symlink, /etc/sysconfig/clock TIMEZONE=
+# Gentoo: /etc/timezone + emerge (/etc/localtime copy)
+# Archlinux: timedatectl (/etc/localtime symlink)
+# Mandrake: /etc/localtime symlink, /etc/sysconfig/clock ZONE=
+# FreeBSD: /etc/localtime copy
+# OpenBSD: /etc/localtime copy
+# NetBSD: /etc/localtime symlink
+# Solaris < 11: /etc/TIMEZONE (symlink -> default/init) TZ= (requires reboot)
+# Solaris 11+: svccfg -s timezone:default setprop timezone/localtime = astring X
+#              svcadm refresh timezone:default
+# HP-UX: /etc/TIMEZONE TZ= (requires reboot)
+# AIX: /etc/environment TZ= (requires reboot, POSIX format - not Olsen)
+# Alpine: ?
+# OpenWrt: ?
+# VMwareESX: ?
 ---
-# tasks file for timezone
-- name: Set /etc/localtime to {{ timezone }}
-  copy: src=/usr/share/zoneinfo/{{ timezone }}
-        dest=/etc/localtime
-        owner=root
-        group=root
-        mode=0644
-        backup=yes
-  when: ansible_os_family == "Debian"
+- name: Load OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+  - files:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+    - "Default.yml"
+    paths: ../vars
+  tags: [configuration,timezone]
+
+- name: Make sure timezone data is installed
+  apt: pkg=tzdata state=present
+  when: ansible_os_family == 'Debian'
+  tags: [configuration,timezone]
+
+- name: Check the system timezone
+  command: "{{ timezone_check }}"
+  register: timezone_check
+  failed_when: False
+  changed_when: False
+  tags: [configuration,timezone]
+
+- name: Set the system timezone
+  command: "{{ timezone_set }} {{ timezone }}"
+  when: timezone_check.rc == 0 and timezone not in timezone_check.stdout
   tags: [configuration,timezone]
 
 - name: Set /etc/timezone to {{ timezone }}
   template: dest=/etc/timezone src=timezone.j2
-  notify: update tzdata
-  when: ansible_os_family == "Debian"
+  register: timezonefile
+  when: timezone_check.rc != 0
+        and (ansible_os_family == 'Debian' or ansible_os_family == 'Gentoo')
+  tags: [configuration,timezone]
+
+- name: Update timezone from /etc/timezone
+  command: "{{ timezone_file_set }}"
+  when: timezonefile|changed
+  tags: [configuration,timezone]
+
+- name: Update timezone configuration file
+  lineinfile: dest={{ timezone_conf_path }} state=present
+              regexp='^{{ timezone_conf_var }}='
+              line='{{ timezone_conf_var }}="{{ timezone }}"'
+  when: timezone_conf_path != ''
+  tags: [configuration,timezone]
+
+- name: Check whether /etc/localtime is a symlink
+  command: python -c 'import os; print(os.readlink("{{ tzfile }}"))'
+  register: readlink
+  failed_when: readlink.rc != 0 and not
+               readlink.stderr|search(
+                "(No such file or directory|Invalid argument). '{{ tzfile }}'"
+               )
+  changed_when: False
+  tags: [configuration,timezone]
+
+- name: Set /etc/localtime to {{ timezone }} | F
+  command: rsync -Lci --times /usr/share/zoneinfo/{{ timezone }} {{ tzfile }}
+  when: timezone_check.rc != 0 and
+        (timezone_localtime_mode == 'copy' or
+         (timezone_localtime_mode != 'symlink' and readlink.rc != 0))
+  register: rsync
+  changed_when: rsync.stdout|search('^>f.*')
+  tags: [configuration,timezone]
+
+- name: Set /etc/localtime to {{ timezone }} | L
+  file: src=/usr/share/zoneinfo/{{ timezone }}
+        dest={{ tzfile }}
+        state=link
+        force={{ 'yes' if timezone_localtime_mode == 'symlink' else 'no' }}
+        owner=root group=0 mode=0644
+  when: timezone_check.rc != 0 and
+        (timezone_localtime_mode == 'symlink' or
+         (timezone_localtime_mode != 'copy' and readlink.rc == 0))
   tags: [configuration,timezone]

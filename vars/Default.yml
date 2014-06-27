@@ -1,0 +1,7 @@
+%YAML 1.1  # expansible.timezone/vars/Default.yml  -*- mode: yaml -*-
+
+# Default timezone variables
+---
+
+# no variables defined here - see expansible.timezone/defaults/main.yml
+this_defaults_variable_file: "must be stored as a dictionary/hash"
